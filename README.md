@@ -1,38 +1,51 @@
-import random
+# Hardcoded stock prices
+stock_prices = {
+    "AAPL": 175.00,
+    "GOOGL": 2850.50,
+    "TSLA": 720.30,
+    "AMZN": 3440.25,
+    "MSFT": 299.00
+}
 
-# List of predefined words
-word_list = ['python', 'code', 'hangman', 'program', 'alpha']
-chosen_word = random.choice(word_list)
-word_length = len(chosen_word)
-guessed_letters = []
-tries = 6
+portfolio = {}
+total_investment = 0
 
-# Create a display with underscores
-display = ['_'] * word_length
+print("Welcome to the Stock Tracker!")
+print("Available stocks:", ', '.join(stock_prices.keys()))
+print("Type 'done' to finish input.\n")
 
-print("Welcome to Hangman Game!\n")
-
-while tries > 0 and '_' in display:
-    print("\nWord: " + ' '.join(display))
-    guess = input("Guess a letter: ").lower()
-
-    if guess in guessed_letters:
-        print("You already guessed that letter.")
-        continue
-
-    guessed_letters.append(guess)
-
-    if guess in chosen_word:
-        print("Good guess!")
-        for i in range(word_length):
-            if chosen_word[i] == guess:
-                display[i] = guess
+# Step 1: Take input from user
+while True:
+    stock = input("Enter stock symbol: ").upper()
+    if stock == 'DONE':
+        break
+    if stock in stock_prices:
+        try:
+            quantity = int(input(f"Enter quantity for {stock}: "))
+            portfolio[stock] = quantity
+        except ValueError:
+            print("Please enter a valid number.")
     else:
-        tries -= 1
-        print(f"Wrong guess. You have {tries} tries left.")
+        print("Stock not found. Please choose from available list.")
 
-# Check win/lose
-if '_' not in display:
-    print("\nCongratulations! You guessed the word:", chosen_word)
-else:
-    print("\nGame over! The word was:", chosen_word)
+# Step 2: Calculate total investment
+print("\nInvestment Summary:")
+for stock, qty in portfolio.items():
+    price = stock_prices[stock]
+    value = qty * price
+    total_investment += value
+    print(f"{stock}: {qty} shares x ${price:.2f} = ${value:.2f}")
+
+print(f"\nTotal Investment: ${total_investment:.2f}")
+
+# Step 3: Optional — Save to file
+save = input("\nDo you want to save the result to a file? (yes/no): ").lower()
+if save == 'yes':
+    with open("stock_investment_summary.txt", "w") as file:
+        file.write("Stock Investment Summary:\n")
+        for stock, qty in portfolio.items():
+            price = stock_prices[stock]
+            value = qty * price
+            file.write(f"{stock}: {qty} x ${price:.2f} = ${value:.2f}\n")
+        file.write(f"\nTotal Investment: ${total_investment:.2f}")
+    print("Summary saved to 'stock_investment_summary.txt'.")
